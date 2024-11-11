@@ -7,7 +7,8 @@ interface IUser extends Document {
   username: string;
   password: string;
   role: "user" | "admin";
-  generateAuthToken: () => string; // Add the method signature
+  generateAuthToken: () => string;
+  correctPassword: (candidatePassword: string, userPassword: string) => string; // Add the method signature
 }
 
 const UserSchema = new mongoose.Schema<IUser>({
@@ -40,6 +41,13 @@ UserSchema.methods.generateAuthToken = function () {
   });
 
   return token;
+};
+
+UserSchema.methods.correctPassword = async function (
+  candidatePassword: string,
+  userPassword: string
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
 };
 
 const User = mongoose.model("User", UserSchema);
