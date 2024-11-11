@@ -1,9 +1,10 @@
 import { NextFunction } from "express";
 import bcrypt from "bcryptjs";
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import jwt from "jsonwebtoken";
 
 interface IUser extends Document {
+  _id: ObjectId; // Correct type for MongoDB
   username: string;
   password: string;
   role: "user" | "admin";
