@@ -1,47 +1,22 @@
 import BlogCard from "./BlogCard";
 import Gutter from "./Gutter";
+import { usePosts } from "@/hooks/usePosts";
+import BlogCardSkeleton from "./skeletons/BlogCardSkeleton";
+
+type Blog = {
+  _id: string;
+  title: string;
+  content: string;
+  author: {
+    username: string;
+    _id: string;
+  };
+};
 
 export default function Blogs() {
-  // Dummy data for blogs
-  const blogData = [
-    {
-      title: "Exploring New Horizons in Technology",
-      content:
-        "In this blog post, we dive into the latest trends and insights shaping the tech industry. From AI advancements to sustainable practices, we cover it all...",
-      author: "John Doe",
-    },
-    {
-      title: "The Art of Minimalist Living",
-      content:
-        "Discover how embracing a minimalist lifestyle can lead to greater happiness, clarity, and focus in your daily life.",
-      author: "Jane Smith",
-    },
-    {
-      title: "Top 10 Travel Destinations for 2024",
-      content:
-        "From exotic beaches to bustling cities, these are the must-see travel spots for the coming year.",
-      author: "Alex Brown",
-    },
-    {
-      title: "Mastering the Basics of Cooking",
-      content:
-        "Cooking can be simple and fun. Here are the foundational skills every home chef should master to create delicious meals.",
-      author: "Chris Lee",
-    },
-    {
-      title: "Mindfulness and Mental Health",
-      content:
-        "A comprehensive guide to incorporating mindfulness practices into daily routines to improve mental well-being.",
-      author: "Patricia Green",
-    },
-    {
-      title: "Building Financial Independence",
-      content:
-        "Learn the steps to financial freedom and how to manage your finances effectively.",
-      author: "Michael Scott",
-    },
-  ];
+  const { data, isLoading, isError, error } = usePosts();
 
+  if (isError) return <p className="text-xl text-red-500">{error.message}</p>;
   return (
     <Gutter className="pb-12">
       <h2 className="text-2xl font-semibold py-8 font-mono text-center relative">
@@ -49,14 +24,17 @@ export default function Blogs() {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {blogData.map((blog, index) => (
-          <BlogCard
-            key={index}
-            title={blog.title}
-            content={blog.content}
-            author={blog.author}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: 6 }, (_, i) => <BlogCardSkeleton key={i} />)
+          : data?.map((blog: Blog) => (
+              <BlogCard
+                key={blog._id}
+                title={blog.title}
+                content={blog.content}
+                author={blog.author.username}
+                id={blog._id}
+              />
+            ))}
       </div>
     </Gutter>
   );

@@ -2,12 +2,13 @@ import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 type BlogCardProps = {
+  id: string;
   title: string;
   content: string;
   author: string;
 };
 
-function BlogCard({ title, content, author }: BlogCardProps) {
+function BlogCard({ title, content, author, id }: BlogCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300 h-full">
       {/* Title with Icon */}
@@ -30,7 +31,7 @@ function BlogCard({ title, content, author }: BlogCardProps) {
 
         {/* Read More Button */}
         <Link
-          to={`/blog/1`}
+          to={`/blog/${id}`}
           className="px-5 py-2 rounded font-serif border-2 hover:shadow-sm text-stone-700 "
         >
           Read More

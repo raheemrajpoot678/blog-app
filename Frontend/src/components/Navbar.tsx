@@ -26,12 +26,7 @@ export default function Navbar() {
           >
             Home
           </NavLink>
-          <NavLink
-            to="/blogs"
-            className="text-gray-700 hover:text-blue-600 transition"
-          >
-            Blogs
-          </NavLink>
+
           <NavLink
             to="/about"
             className="text-gray-700 hover:text-blue-600 transition"

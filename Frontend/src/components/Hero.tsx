@@ -19,12 +19,12 @@ export default function Hero() {
           and insights designed to elevate your perspective and inspire action.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link
-            to="/blogs"
+          <button
+            onClick={() => window.scrollTo({ top: 490, behavior: "smooth" })}
             className="bg-primary px-6 py-2 sm:px-8 sm:py-3 rounded text-base sm:text-lg font-semibold hover:bg-primary-dark w-full sm:w-auto text-center"
           >
             Explore Blogs
-          </Link>
+          </button>
           <Link
             to="/about"
             className="bg-transparent border border-white px-6 py-2 sm:px-8 sm:py-3 rounded text-base sm:text-lg font-semibold w-full sm:w-auto text-center"
@@ -35,7 +35,10 @@ export default function Hero() {
       </div>
 
       {/* Animated Scroll Indicator */}
-      <div className="absolute bottom-8 sm:bottom-10 left-1/2 transform -translate-x-1/2 text-gray-300">
+      <button
+        onClick={() => window.scrollTo({ top: 490, behavior: "smooth" })}
+        className="absolute cursor-pointer bottom-8 sm:bottom-10 left-1/2 transform -translate-x-1/2 text-gray-300"
+      >
         <svg
           className="w-6 h-6 sm:w-8 sm:h-8 animate-bounce"
           fill="none"
@@ -49,7 +52,7 @@ export default function Hero() {
             d="M19 9l-7 7-7-7"
           ></path>
         </svg>
-      </div>
+      </button>
     </div>
   );
 }
