@@ -1,7 +1,11 @@
 import Gutter from "@/components/Gutter";
+import { useEffect } from "react";
 import { FaEnvelope, FaPhone, FaLocationArrow } from "react-icons/fa";
 
 export default function Contact() {
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
   return (
     <Gutter className="pt-24 pb-12">
       <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">

@@ -5,8 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { LiaTimesSolid } from "react-icons/lia";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Overlay from "@/components/Overlay";
+import { toast } from "react-toastify";
+import { login } from "@/redux/userSlice";
+import { apiUrl } from "./Login";
+import { useDispatch } from "react-redux";
 
 const schema = z.object({
   username: z.string().min(3, { message: "Username is required!" }),
@@ -20,18 +24,55 @@ type FormData = z.infer<typeof schema>;
 export default function Register() {
   const [loading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data);
-    // Implement registration API call here
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        `${apiUrl}/api/auth/register`,
+        {
+          username: data.username,
+          password: data.password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("RES :", res);
+      if (res.data.status === "success") {
+        toast.success(`🖤 Wellcome Back! ${res?.data?.user?.username}`);
+        reset();
+        navigate("/");
+        dispatch(
+          login({
+            id: res.data.user._id,
+            role: res.data.user.role,
+            username: res.data.user?.username,
+          })
+        );
+      }
+    } catch (error: any) {
+      console.log("ERROR :", error);
+      if (error.response && error.response.data) {
+        const errMessage = error.response.data.message;
+        toast.error(`❌ ${errMessage}`);
+      } else {
+        toast.error("❌ An unexpected error occurred");
+      }
+      reset();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

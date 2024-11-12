@@ -1,8 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, user } = useSelector(
+    (state: RootState) => state.user
+  );
 
   return (
     <header className="flex fixed left-0 w-full top-0 items-center justify-between h-20 bg-white shadow-sm px-4 sm:px-10 md:px-12 lg:px-16 z-50">
@@ -43,20 +48,34 @@ export default function Navbar() {
       </div>
 
       {/* Desktop Action Buttons */}
-      <div className="hidden md:flex items-center gap-4">
-        <Link
-          to="/login"
-          className="text-black font-semibold rounded px-4 py-2 border  transition"
-        >
-          Login
-        </Link>
-        <Link
-          to="/register"
-          className="bg-black text-white font-semibold px-4 py-2 rounded hover:bg-stone-900 transition"
-        >
-          Register
-        </Link>
-      </div>
+      {isAuthenticated ? (
+        <div className="flex items-center gap-3">
+          {user?.role === "admin" && (
+            <Link
+              to="/dashboard"
+              className="bg-stone-800 py-1 px-2 rounded text-white text-sm"
+            >
+              Dashboard
+            </Link>
+          )}
+          <p>{user?.username}</p>
+        </div>
+      ) : (
+        <div className="hidden md:flex items-center gap-4">
+          <Link
+            to="/login"
+            className="text-black font-semibold rounded px-4 py-2 border  transition"
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="bg-black text-white font-semibold px-4 py-2 rounded hover:bg-stone-900 transition"
+          >
+            Register
+          </Link>
+        </div>
+      )}
       {/* Mobile Menu Button */}
       <button
         className="md:hidden flex items-center"

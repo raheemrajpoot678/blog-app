@@ -2,7 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Gutter from "@/components/Gutter";
 
@@ -41,7 +41,9 @@ export default function CreateBlog() {
       setIsLoading(false);
     }
   };
-
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
   return (
     <Gutter className="pt-24 pb-16 sm:pb-3 sm:mb-8 min-h-screen flex flex-col">
       <h2 className="text-2xl font-semibold mb-6 font-mono">
