@@ -38,7 +38,7 @@ export const login = catchAsync(
     const user = await User.findOne({ username }).select("+password");
 
     if (!user || !(await user.correctPassword(password, user.password)))
-      return next(new AppError("Invalid email or password", 401));
+      return next(new AppError("Invalid username or password", 401));
 
     const token = user.generateAuthToken();
     user.password = undefined;

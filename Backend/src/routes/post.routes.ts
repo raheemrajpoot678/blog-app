@@ -14,6 +14,7 @@ const router = express.Router();
 router.get("/", getAllPosts);
 router.get("/:id", getPost);
 
+// Only Admin
 router.use(protect, adminOnly);
 router.post("/", createPost);
 router.route("/:id").put(updatePost).delete(deletePost);
