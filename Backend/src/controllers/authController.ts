@@ -51,3 +51,13 @@ export const login = catchAsync(
     });
   }
 );
+
+export const logout = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    setCookie("", res);
+    res.status(200).json({
+      status: "success",
+      message: "User logged out successfully",
+    });
+  }
+);

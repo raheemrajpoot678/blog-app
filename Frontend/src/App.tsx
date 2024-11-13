@@ -8,6 +8,7 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CreateBlog from "./pages/CreateBlog";
+import PrivateRoute from "./components/PrivateRoute";
 
 export default function App() {
   return (
@@ -19,7 +20,14 @@ export default function App() {
           <Route path="/register" element={<Register />} />
         </Route>
         <Route path="/blog/:postId" element={<BlogPost />} />
-        <Route path="/create" element={<CreateBlog />} />
+        <Route
+          path="/create"
+          element={
+            <PrivateRoute>
+              <CreateBlog />
+            </PrivateRoute>
+          }
+        />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>

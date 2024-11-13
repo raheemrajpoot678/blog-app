@@ -1,13 +1,49 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { CiLogout } from "react-icons/ci";
+import { toast } from "react-toastify";
+import { apiUrl } from "@/pages/Login";
+import axios from "axios";
+import { logout } from "@/redux/userSlice";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.user
   );
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function handleLogout() {
+    // /log-out
+    try {
+      const res = await axios.post(
+        `${apiUrl}/api/auth/log-out`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("RES :", res);
+      if (res.data.status === "success") {
+        toast.success(`${res?.data?.message}`);
+        navigate("/");
+        dispatch(logout());
+      }
+    } catch (error: any) {
+      console.log("ERROR :", error);
+      if (error.response && error.response.data) {
+        const errMessage = error.response.data.message;
+        toast.error(`❌ ${errMessage}`);
+      } else {
+        toast.error("❌ An unexpected error occurred");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <header className="flex fixed left-0 w-full top-0 items-center justify-between h-20 bg-white shadow-sm px-4 sm:px-10 md:px-12 lg:px-16 z-50">
@@ -47,13 +83,16 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {user?.role === "admin" && (
             <Link
-              to="/dashboard"
+              to="/create"
               className="bg-stone-800 py-1 px-2 rounded text-white text-sm"
             >
-              Dashboard
+              Upload
             </Link>
           )}
           <p>{user?.username}</p>
+          <button onClick={handleLogout} disabled={isLoading}>
+            <CiLogout size={19} />
+          </button>
         </div>
       ) : (
         <div className="hidden md:flex items-center gap-4">
@@ -71,86 +110,6 @@ export default function Navbar() {
           </Link>
         </div>
       )}
-      {/* Mobile Menu Button */}
-      <button
-        className="md:hidden flex items-center"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <svg
-          className="w-8 h-8 text-stone-900"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-          ></path>
-        </svg>
-      </button>
-
-      {/* Mobile Menu Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsOpen(false)}
-        ></div>
-      )}
-
-      {/* Mobile Nav NavLinks */}
-      <div
-        className={`${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        } fixed right-0 top-0 h-full w-[60%] bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out`}
-      >
-        <nav className="flex flex-col items-start p-6 gap-y-4 gap-6 font-medium">
-          <NavLink
-            to="/"
-            className="text-gray-700 hover:text-blue-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/blogs"
-            className="text-gray-700 hover:text-blue-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Blogs
-          </NavLink>
-          <NavLink
-            to="/about"
-            className="text-gray-700 hover:text-blue-600"
-            onClick={() => setIsOpen(false)}
-          >
-            About
-          </NavLink>
-          <NavLink
-            to="/contact"
-            className="text-gray-700 hover:text-blue-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Contact
-          </NavLink>
-          <Link
-            to="/login"
-            className="text-gray-700 hover:text-blue-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="bg-black text-white font-semibold px-4 py-2 rounded hover:bg-stone-900 transition"
-            onClick={() => setIsOpen(false)}
-          >
-            Register
-          </Link>
-        </nav>
-      </div>
     </header>
   );
 }

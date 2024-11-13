@@ -2,9 +2,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect } from "react";
 import Gutter from "@/components/Gutter";
+import { useCreatePost } from "@/hooks/useCreatePost";
+import { toast } from "react-toastify";
+import { QueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   title: z.string().min(3, {
@@ -17,33 +19,42 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export const apiUrl = "http://localhost:5000";
-
 export default function CreateBlog() {
-  const [loading, setIsLoading] = useState(false);
-
+  const { mutateAsync, isPending } = useCreatePost();
+  const queryClient = new QueryClient();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    setIsLoading(true);
     try {
-      await axios.post(`${apiUrl}/blogs`, data);
-      alert("Blog created successfully!");
-    } catch (error) {
-      console.error("Error creating blog:", error);
-    } finally {
-      setIsLoading(false);
+      await mutateAsync(data);
+      reset();
+      toast.success("Blog created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["blogs"] }); // Invalidate the blogs query to fetch updated data
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Error during submission:", err.message);
+        if ((err as any).response?.data?.message) {
+          toast.error(
+            `Submission error: ${(err as any).response.data.message}`
+          );
+        } else {
+          toast.error("An unknown error occurred.");
+        }
+      }
     }
   };
+
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, []);
+
   return (
     <Gutter className="pt-24 pb-16 sm:pb-3 sm:mb-8 min-h-screen flex flex-col">
       <h2 className="text-2xl font-semibold mb-6 font-mono">
@@ -102,10 +113,10 @@ export default function CreateBlog() {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading}
+          disabled={isPending}
           className="w-fit self-end bg-stone-900 text-white flex items-center justify-center gap-3 h-10 px-4 rounded "
         >
-          {loading && <AiOutlineLoading className="animate-spin" />}
+          {isPending && <AiOutlineLoading className="animate-spin" />}
           <p>Upload Blog</p>
         </button>
       </form>

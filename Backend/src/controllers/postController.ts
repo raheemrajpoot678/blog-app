@@ -5,10 +5,11 @@ import Post from "../models/post.model";
 
 export const getAllPosts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const posts = await Post.find().populate({
+    const posts = await Post.find().sort({ createdAt: -1 }).populate({
       path: "author",
       select: "username",
     });
+
     res.status(200).json({
       status: "success",
       results: posts.length,
