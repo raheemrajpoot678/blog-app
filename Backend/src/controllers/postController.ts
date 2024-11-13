@@ -51,7 +51,7 @@ export const createPost = catchAsync(
     });
     res.status(201).json({
       status: "success",
-      message: "Post created successfully",
+      message: "Blog Uploaded Successfully",
       data: newPost,
     });
   }

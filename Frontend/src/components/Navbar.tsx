@@ -46,7 +46,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="flex fixed left-0 w-full top-0 items-center justify-between h-20 bg-white shadow-sm px-4 sm:px-10 md:px-12 lg:px-16 z-50">
+    <header className="flex fixed left-0 w-full top-0 items-center justify-between h-20 bg-white shadow-sm px-4 sm:px-10 md:px-12 lg:px-16 z-30">
       <div className="flex justify-between gap-16">
         <div className="flex items-center gap-3 text-2xl font-semibol">
           <Link to="/">
@@ -95,7 +95,7 @@ export default function Navbar() {
           </button>
         </div>
       ) : (
-        <div className="hidden md:flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <Link
             to="/login"
             className="text-black font-semibold rounded px-4 py-2 border  transition"

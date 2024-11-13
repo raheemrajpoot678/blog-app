@@ -4,10 +4,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import Gutter from "@/components/Gutter";
-import { useCreatePost } from "@/hooks/useCreatePost";
 import { toast } from "react-toastify";
 import { QueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useUpdatePost } from "@/hooks/useUpdatePost";
+import { usePost } from "@/hooks/usePost";
+import BlogUpdateSkeleton from "@/components/skeletons/BlogUpdateSkeleton";
 
 const schema = z.object({
   title: z.string().min(3, {
@@ -20,9 +22,11 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function CreateBlog() {
-  const { mutateAsync, isPending } = useCreatePost();
+export default function UpdatePost() {
+  const { mutate, isPending } = useUpdatePost();
   const navigate = useNavigate();
+  const { postId = "" } = useParams();
+  const { data: post, isLoading } = usePost(postId);
 
   const queryClient = new QueryClient();
   const {
@@ -32,16 +36,32 @@ export default function CreateBlog() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: { title: "", content: "" },
   });
+
+  useEffect(() => {
+    if (post) {
+      reset({
+        title: post.title || "",
+        content: post.content || "",
+      });
+    }
+  }, [post, reset]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      await mutateAsync(data);
+      mutate(
+        { id: postId, data },
+        {
+          onSuccess: () => console.log("Data updated successfully"),
+          onError: (err) => console.error("Error updating data:", err),
+        }
+      );
       reset();
-      toast.success("Blog created successfully!");
+      toast.success("Blog UPdated successfully!");
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
       navigate("/");
-      window.scrollTo({ top: 490, behavior: "smooth" }); // Invalidate the blogs query to fetch updated data
+      window.scrollTo({ top: 490, behavior: "smooth" });
     } catch (err) {
       if (err instanceof Error) {
         console.error("Error during submission:", err.message);
@@ -60,11 +80,10 @@ export default function CreateBlog() {
     window.scrollTo({ top: 0 });
   }, []);
 
+  if (isLoading) return <BlogUpdateSkeleton />;
   return (
     <Gutter className=" relative pt-24 pb-16 sm:pb-3 sm:mb-8 min-h-screen flex flex-col">
-      <h2 className="text-2xl font-semibold mb-6 font-mono">
-        Create a New Blog
-      </h2>
+      <h2 className="text-2xl font-semibold mb-6 font-mono">UPdate BLog</h2>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col flex-grow"
@@ -122,7 +141,7 @@ export default function CreateBlog() {
           className="w-fit self-end bg-stone-900 text-white flex items-center justify-center gap-3 h-10 px-4 rounded "
         >
           {isPending && <AiOutlineLoading className="animate-spin" />}
-          <p>Upload Blog</p>
+          <p>UPdate Blog</p>
         </button>
       </form>
     </Gutter>

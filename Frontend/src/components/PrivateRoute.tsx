@@ -14,7 +14,7 @@ export default function PrivateRoute({ children }: { children: ReactNode }) {
     if (!isAuthenticated) {
       navigate("/login", { replace: true });
     } else if (user?.role !== "admin") {
-      toast.error("Only admin Can Create Posts");
+      toast.error("Only admin Can Create Or Update Posts");
       navigate("/", { replace: true });
     }
   }, [isAuthenticated, navigate]);

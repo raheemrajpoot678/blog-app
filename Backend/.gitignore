@@ -6,7 +6,7 @@ node_modules/
 logs/
 
 # Environment variable files
-.env
+# .env
 
 # Debug files
 *.tgz
